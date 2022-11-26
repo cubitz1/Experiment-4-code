@@ -1,0 +1,53 @@
+#include <FastLED.h>
+
+#define LED_PIN     2
+#define NUM_LEDS    20
+#define LED_TYPE    WS2812
+#define COLOR_ORDER GRB
+#define OVERALL_BRIGHTNESS 50
+CRGB leds[NUM_LEDS];
+
+//this is the port where the button is connected
+#define buttonPin 3
+
+bool button_switch = false;
+unsigned long lastButtonPress;
+
+
+void setup() {
+
+  pinMode(buttonPin, INPUT_PULLUP);
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.setBrightness (OVERALL_BRIGHTNESS);
+}
+
+
+void loop() {
+
+  int btnState = digitalRead(buttonPin);
+
+  if (btnState == LOW) {
+    if (millis() - lastButtonPress > 50) {
+
+      //This toggles the state of "button_switch" from
+      //either "true" to "false" or vice versa
+      button_switch = !button_switch;
+    }
+    lastButtonPress = millis();
+  }
+
+
+  //When you press the button, it switches between these
+  //two options:
+
+  if (button_switch == true) {
+    fill_rainbow(leds, NUM_LEDS, 0, 16);
+  }
+
+  else if (button_switch == false) {
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+  }
+
+  FastLED.show();
+
+}
